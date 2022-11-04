@@ -1,6 +1,6 @@
 # Todo Application API
 
-An Express API server that includes functionality to support a basic Todo Application. Built with with basic username/password authentication, bearer authentication, and role-based access control.
+An Express API server that includes functionality to support a basic Todo Application. Built with basic username/password authentication, bearer authentication, and role-based access control.
 
 Author: [Robert Shepley](https://github.com/shepleysound)
 
