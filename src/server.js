@@ -16,6 +16,10 @@ const profileRouter = require('./routes/profiles');
 
 const app = express();
 
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
+const swaggerDocument = YAML.load('openapi.yml');
+
 // App level middleware
 app.use(cors());
 // app.use(logger);
@@ -27,6 +31,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/auth', authRouter);
 app.use('/api/todos', todoRouter);
 app.use('/api/profile', profileRouter);
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.get('/', (req, res) => {
   res.status(200).send('Welcome to the server!');

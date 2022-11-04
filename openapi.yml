@@ -3,7 +3,7 @@ info:
   title: Todo API
   version: '1.0'
 servers:
-  # - url: http://localhost:3000
+  - url: http://localhost:3000
 paths:
   ##### Auth Paths #####
   /auth/signup:
@@ -54,30 +54,6 @@ paths:
           'application/json':
             schema:
               $ref: '#/components/schemas/Todo'
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: OK
-        '403':
-          $ref: '#/components/responses/UnauthorizedError'
-      tags:
-        - Todos
-  /api/todos/checked:
-    get:
-      summary: Get all todos currently checked out by a user.
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: OK
-        '403':
-          $ref: '#/components/responses/UnauthorizedError'
-      tags:
-        - Todos
-  /api/todos/available:
-    get:
-      summary: Get all todos not checked out by a user
       security:
         - bearerAuth: []
       responses:
@@ -200,7 +176,9 @@ components:
           enum: [unverified, user, moderator, admin]
     Todo:
       properties:
-        title:
+        task:
           type: string
         difficulty:
           type: integer
+        complete:
+          type: boolean
