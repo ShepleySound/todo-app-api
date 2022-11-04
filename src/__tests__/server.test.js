@@ -16,7 +16,6 @@ afterAll(async () => {
 });
 
 describe('Test API Server', () => {
-
   test('404 on invalid route', async () => {
     const response = await request.get('/definitelydoesnotexist');
     expect(response.status).toEqual(404);
@@ -38,7 +37,6 @@ describe('Test API Server', () => {
   //   });
   //   expect(response.status).toEqual(500);
   // });
-
 });
 
 describe('Test admin authentication', () => {
@@ -59,16 +57,18 @@ describe('Test admin authentication', () => {
     expect(capabilities).toContain('superuser');
     expect(token).toBeTruthy();
   });
-  
+
   test('Valid admin signin', async () => {
-    const encodedAuth = Buffer.from(`${testUsername}:${testPassword}`).toString('base64');
-    
+    const encodedAuth = Buffer.from(`${testUsername}:${testPassword}`).toString(
+      'base64'
+    );
+
     const response = await request
       .post('/auth/signin')
       .set('Authorization', 'basic ' + encodedAuth);
 
     const { username, role, capabilities, token } = response.body;
-    
+
     expect(username).toEqual(testUsername);
     expect(role).toEqual(testRole);
     expect(capabilities).toContain('superuser');
@@ -76,7 +76,9 @@ describe('Test admin authentication', () => {
   });
 
   test('Generic auth error when password is incorrect', async () => {
-    const encodedAuth = Buffer.from(`${testUsername}:incorrectpassword!`).toString('base64');
+    const encodedAuth = Buffer.from(
+      `${testUsername}:incorrectpassword!`
+    ).toString('base64');
     const response = await request
       .post('/auth/signin')
       .set('Authorization', 'basic ' + encodedAuth);
@@ -85,7 +87,9 @@ describe('Test admin authentication', () => {
   });
 
   test('Generic auth error when username does not exist', async () => {
-    const encodedAuth = Buffer.from(`Definitelynotarealusername:dontevenbotherwithapassword!`).toString('base64');
+    const encodedAuth = Buffer.from(
+      `Definitelynotarealusername:dontevenbotherwithapassword!`
+    ).toString('base64');
     const response = await request
       .post('/auth/signin')
       .set('Authorization', 'basic ' + encodedAuth);
@@ -95,9 +99,9 @@ describe('Test admin authentication', () => {
 });
 
 describe('Test user authentication', () => {
-  const testUsername = 'testReader';
+  const testUsername = 'testUnverified';
   const testPassword = 'thisisapassworditprobablyisnotverygood';
-  const testRole = 'reader';
+  const testRole = 'unverified';
 
   test('User signup', async () => {
     const response = await request.post('/auth/signup').send({
@@ -110,14 +114,16 @@ describe('Test user authentication', () => {
 
     expect(username).toEqual(testUsername);
     expect(role).toEqual(testRole);
-    expect(capabilities).toContain('checkout');
+    expect(capabilities).toContain('read');
     expect(capabilities).not.toContain('superuser');
     expect(token).toBeTruthy();
   });
 
   test('Valid user signin', async () => {
-    const encodedAuth = Buffer.from(`${testUsername}:${testPassword}`).toString('base64');
-    
+    const encodedAuth = Buffer.from(`${testUsername}:${testPassword}`).toString(
+      'base64'
+    );
+
     const signinResponse = await request
       .post('/auth/signin')
       .set('Authorization', 'basic ' + encodedAuth);
@@ -126,156 +132,148 @@ describe('Test user authentication', () => {
 
     expect(username).toEqual(testUsername);
     expect(role).toEqual(testRole);
-    expect(capabilities).toContain('checkout');
+    expect(capabilities).toContain('read');
     expect(capabilities).not.toContain('superuser');
     expect(token).toBeTruthy();
   });
 });
 
-describe('Test basic /books CRUD methods with valid authentication', () => {
+describe('Test basic /todo CRUD methods with valid authentication', () => {
   const testUsername = 'testAdmin';
   const testPassword = 'adminpasswordSuperSecret!';
-  
+
   let token = '';
   beforeAll(async () => {
-    const encodedAuth = Buffer.from(`${testUsername}:${testPassword}`).toString('base64');
-    
+    const encodedAuth = Buffer.from(`${testUsername}:${testPassword}`).toString(
+      'base64'
+    );
+
     const response = await request
       .post('/auth/signin')
       .set('Authorization', 'basic ' + encodedAuth);
-      
+
     token = response.body.token;
   });
 
-  test('Handle getting all books', async () => {
+  test('Handle getting all todos', async () => {
     const response = await request
-      .get('/api/books')
+      .get('/api/todos')
       .set('Authorization', 'bearer ' + token);
     expect(response.status).toEqual(200);
   });
 
-  test('Create a book', async () => {
+  test('Create a todo', async () => {
     let response = await request
-      .post('/api/books')
+      .post('/api/todos')
       .set('Authorization', 'bearer ' + token)
       .send({
-        title: 'Test Book',
-        author: 'Test Author',
-        pages: 100,
+        task: 'Test Todo',
+        difficulty: 1,
       });
     expect(response.status).toEqual(201);
-    expect(response.body.title).toEqual('Test Book');
-    expect(response.body.author).toEqual('Test Author');
-    expect(response.body.pages).toEqual(100);
+    expect(response.body.task).toEqual('Test Todo');
+    expect(response.body.author).toEqual('testAdmin');
+    expect(response.body.difficulty).toEqual(1);
   });
 
-  test('Get a book by id', async () => {
-    const response = await request
-      .get('/api/books/1')
+  test('Get a todo by id', async () => {
+    let response = await request
+      .get('/api/todos/1')
       .set('Authorization', 'bearer ' + token);
     expect(response.status).toEqual(200);
-    expect(response.body.title).toEqual('Test Book');
-    expect(response.body.author).toEqual('Test Author');
-    expect(response.body.pages).toEqual(100);
+    expect(response.body.task).toEqual('Test Todo');
+    expect(response.body.author).toEqual('testAdmin');
+    expect(response.body.difficulty).toEqual(1);
   });
 
-  test('Update a book using PUT', async () => {
+  test('Update a todo using PUT', async () => {
     let response = await request
-      .put('/api/books/1')
+      .put('/api/todos/1')
       .set('Authorization', 'bearer ' + token)
       .send({
-        title: 'Updated Test Book',
+        task: 'Updated Test Todo',
       });
     expect(response.status).toEqual(200);
-    expect(response.body.title).toEqual('Updated Test Book');
-    expect(response.body.author).toEqual('Test Author');
-    expect(response.body.pages).toEqual(100);
+    expect(response.body.task).toEqual('Updated Test Todo');
+    expect(response.body.author).toEqual('testAdmin');
+    expect(response.body.difficulty).toEqual(1);
   });
 
-  test('Update a book using PATCH', async () => {
+  test('Update a todo using PATCH', async () => {
     let response = await request
-      .patch('/api/books/1')
+      .patch('/api/todos/1')
       .set('Authorization', 'bearer ' + token)
       .send({
-        title: 'Updated Test Book',
+        task: 'Updated Test Todo',
       });
     expect(response.status).toEqual(200);
-    expect(response.body.title).toEqual('Updated Test Book');
-    expect(response.body.author).toEqual('Test Author');
-    expect(response.body.pages).toEqual(100);
+    expect(response.body.task).toEqual('Updated Test Todo');
+    expect(response.body.author).toEqual('testAdmin');
+    expect(response.body.difficulty).toEqual(1);
   });
 
-  test('Delete a book', async () => {
+  test('Delete a todo', async () => {
     let response = await request
-      .delete('/api/books/1')
+      .delete('/api/todos/1')
       .set('Authorization', 'bearer ' + token);
     expect(response.status).toEqual(200);
-    expect(response.body?.title).toBeUndefined();
+    expect(response.body?.task).toBeUndefined();
   });
-
 });
 
-describe('Test basic /books CRUD methods with invalid authentication', () => {
-  test('Handle getting all books', async () => {
-    const response = await request
-      .get('/api/books');
+describe('Test basic /todos CRUD methods with invalid authentication', () => {
+  test('Handle getting all todos', async () => {
+    const response = await request.get('/api/todos');
     expect(response.status).toEqual(401);
   });
 
-  test('Create a book', async () => {
-    let response = await request
-      .post('/api/books')
-      .send({
-        title: 'Test Book',
-        author: 'Test Author',
-        pages: 100,
-      });
+  test('Create a todo', async () => {
+    let response = await request.post('/api/todos').send({
+      task: 'Test Todo',
+      difficulty: 1,
+    });
     expect(response.status).toEqual(401);
   });
 
-  test('Get a book by id', async () => {
-    const response = await request
-      .get('/api/books/1');
+  test('Get a todo by id', async () => {
+    const response = await request.get('/api/todos/1');
     expect(response.status).toEqual(401);
   });
 
-  test('Update a book', async () => {
-    let response = await request
-      .put('/api/books/1')
-      .send({
-        title: 'Updated Test Book',
-      });
+  test('Update a todo', async () => {
+    let response = await request.put('/api/todos/1').send({
+      task: 'Updated Test Book',
+    });
     expect(response.status).toEqual(401);
   });
 
-  test('Delete a book', async () => {
-    let response = await request
-      .delete('/api/books/1');
+  test('Delete a todo', async () => {
+    let response = await request.delete('/api/todos/1');
     expect(response.status).toEqual(401);
   });
 });
 
 describe('Test role-based access flow', () => {
-
   const testAdmin = 'testAdmin';
   const testAdminPassword = 'adminpasswordSuperSecret!';
-  const testLibrarian = 'testLibrarian';
-  const testLibrarianPassword = 'thisisapassworditisalright';
-  const testReader = 'testReader';
-  const testReaderPassword = 'thisisapassworditprobablyisnotverygood';
+  const testUser = 'testUser2';
+  const testUserPassword = 'thisisapassworditisalright';
+  const testUnverified = 'testUnverified';
+  const testUnverifiedPassword = 'thisisapassworditprobablyisnotverygood';
 
   let adminToken = '';
-  let librarianToken = '';
-  let readerToken = '';
+  let userToken = '';
+  let unverifiedToken = '';
   beforeAll(async () => {
-    
     await request.post('/auth/signup').send({
-      username: testLibrarian,
-      password: testLibrarianPassword,
-      role: 'librarian',
-    });  
+      username: testUser,
+      password: testUserPassword,
+      role: 'user',
+    });
 
-    const adminEncodedAuth = Buffer.from(`${testAdmin}:${testAdminPassword}`).toString('base64');
+    const adminEncodedAuth = Buffer.from(
+      `${testAdmin}:${testAdminPassword}`
+    ).toString('base64');
 
     const adminSigninResponse = await request
       .post('/auth/signin')
@@ -283,114 +281,51 @@ describe('Test role-based access flow', () => {
 
     adminToken = adminSigninResponse.body.token;
 
-    const librarianEncodedAuth = Buffer.from(`${testLibrarian}:${testLibrarianPassword}`).toString('base64');
+    const userEncodedAuth = Buffer.from(
+      `${testUser}:${testUserPassword}`
+    ).toString('base64');
 
-    const librarianSigninResponse = await request
+    const userSigninResponse = await request
       .post('/auth/signin')
-      .set('Authorization', 'basic ' + librarianEncodedAuth);
+      .set('Authorization', 'basic ' + userEncodedAuth);
 
-    librarianToken = librarianSigninResponse.body.token;
-    
-    const readerEncodedAuth = Buffer.from(`${testReader}:${testReaderPassword}`).toString('base64');
-    
-    const readerSigninResponse = await request
+    userToken = userSigninResponse.body.token;
+
+    const unverifiedEncodedAuth = Buffer.from(
+      `${testUnverified}:${testUnverifiedPassword}`
+    ).toString('base64');
+
+    const unverifiedSigninResponse = await request
       .post('/auth/signin')
-      .set('Authorization', 'basic ' + readerEncodedAuth);
-    
-    readerToken = readerSigninResponse.body.token;
+      .set('Authorization', 'basic ' + unverifiedEncodedAuth);
+
+    unverifiedToken = unverifiedSigninResponse.body.token;
   });
 
   test('All tokens should have values', () => {
     expect(adminToken).toBeTruthy();
-    expect(librarianToken).toBeTruthy();
-    expect(readerToken).toBeTruthy();
+    expect(userToken).toBeTruthy();
+    expect(unverifiedToken).toBeTruthy();
   });
 
-  test('Create a book', async () => {
+  test('Create a todo', async () => {
     const response = await request
-      .post('/api/books')
+      .post('/api/todos')
       .set('Authorization', 'bearer ' + adminToken)
       .send({
-        title: 'Test Book',
-        author: 'Test Author',
-        pages: 100,
+        task: 'Test Todo',
+        difficulty: 1,
       });
     expect(response.status).toEqual(201);
   });
 
-  test('Admins can add books to the full catalog', async () => {
-    const books = [
-      {
-        title: 'Test Book1',
-        author: 'Test Author1',
-        pages: 100,
-      },
-      {
-        title: 'Test Book2',
-        author: 'Test Author2',
-        pages: 200,
-      },
-      {
-        title: 'Test Book3',
-        author: 'Test Author3',
-        pages: 300,
-      },
-      {
-        title: 'Test Book4',
-        author: 'Test Author4',
-        pages: 400,
-      },
-      {
-        title: 'Test Book5',
-        author: 'Test Author5',
-        pages: 500,
-      },
-    ];
-    for (const book of books) {
-      let response = await request
-        .post('/api/books')
-        .set('Authorization', 'bearer ' + adminToken)
-        .send(book);
-      expect(response.status).toEqual(201);
-      expect(response.body.title).toEqual(book.title);
-      expect(response.body.author).toEqual(book.author);
-      expect(response.body.pages).toEqual(book.pages);
-    }
-  });
-
-  test('Get a book by id', async () => {
-    // Use book id '2' since we added and deleted a book earlier
+  test('Get a todo by id', async () => {
     const response = await request
-      .get('/api/books/2')
+      .get('/api/todos/2')
       .set('Authorization', 'bearer ' + adminToken);
     expect(response.status).toEqual(200);
-    expect(response.body.title).toEqual('Test Book');
-    expect(response.body.author).toEqual('Test Author');
-    expect(response.body.pages).toEqual(100);
-  });
-
-  test('Admins can add libraries', async () => {
-    let response = await request
-      .post('/api/libraries')
-      .set('Authorization', 'bearer ' + adminToken)
-      .send({
-        name: 'Test Library',
-        location: 'Test location',
-      });
-    expect(response.status).toEqual(201);
-  });
-
-  test('Librarians can add books from the catalog to a library', async () => {
-    const response = await request
-      .patch('/api/books/2/1')
-      .set('Authorization', 'bearer ' + librarianToken);
-    expect(response.status).toEqual(200);
-    const getResponse = await request
-      .get('/api/books/2')
-      .set('Authorization', 'bearer ' + librarianToken);
-    expect(getResponse.status).toEqual(200);
-    expect(getResponse.body.title).toEqual('Test Book');
-    expect(getResponse.body.libraryId).toEqual(1);
-
+    expect(response.body.task).toEqual('Test Todo');
+    expect(response.body.author).toEqual('testAdmin');
+    expect(response.body.difficulty).toEqual(1);
   });
 });

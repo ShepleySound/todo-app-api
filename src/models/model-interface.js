@@ -1,6 +1,5 @@
 'use strict';
 class ModelInterface {
-
   constructor(model) {
     this.model = model;
   }
@@ -15,7 +14,7 @@ class ModelInterface {
     }
   }
 
-  async get(id = null){
+  async get(id = null) {
     try {
       let record;
       if (id) {
@@ -24,21 +23,11 @@ class ModelInterface {
         record = await this.model.findAll();
       }
       return record;
-    } catch(err) {
+    } catch (err) {
       console.error(err.message);
       return err;
     }
   }
-
-  // async readWithRelations(query) {
-  //   try {
-  //     let record = await this.model.findOne(query);
-  //     return record;
-  //   } catch(err) {
-  //     console.error(err.message);
-  //     return err;
-  //   }
-  // }
 
   // Returns the number of records updated. Should be either 0 or 1.
   async update(id, json) {
@@ -50,7 +39,7 @@ class ModelInterface {
       });
       const updated = await this.model.findByPk(id);
       return updated;
-    } catch(err) {
+    } catch (err) {
       console.error(err.message);
       return err;
     }
@@ -65,7 +54,7 @@ class ModelInterface {
       });
       const deleted = await this.model.findByPk(id);
       return deleted;
-    } catch(err) {
+    } catch (err) {
       console.error(err);
       return err;
     }

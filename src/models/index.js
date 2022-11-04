@@ -2,39 +2,37 @@
 
 require('dotenv').config();
 const { Sequelize, DataTypes } = require('sequelize');
-// const ModelInterface = require('./model-interface');
-const BookInterface = require('./books/books-interface');
-const LibraryInterface = require('./libraries/library-interface');
+const TodoInterface = require('./todos/todos-interface');
 
 const DATABASE_URL = process.env.DATABASE_URL || 'sqlite:memory';
 
-
-const DATABASE_CONFIG = process.env.NODE_ENV === 'production' ? {
-  dialectOptions: {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false,
-    },
-  },
-} : process.env.NODE_ENV === 'test' ? {
-  logging: false,
-} : {};
+const DATABASE_CONFIG =
+  process.env.NODE_ENV === 'production'
+    ? {
+        dialectOptions: {
+          ssl: {
+            require: true,
+            rejectUnauthorized: false,
+          },
+        },
+      }
+    : process.env.NODE_ENV === 'test'
+    ? {
+        logging: false,
+      }
+    : {};
 
 const sequelizeDB = new Sequelize(DATABASE_URL, DATABASE_CONFIG);
 
 // Require models
 const User = require('./users/model')(sequelizeDB, DataTypes);
-const Book = require('./books/model')(sequelizeDB, DataTypes);
-const Library = require('./libraries/model')(sequelizeDB, DataTypes);
+const Todo = require('./todos/model')(sequelizeDB, DataTypes);
 
-User.hasMany(Book);
-Book.belongsTo(User);
-Book.belongsTo(Library);
-Library.hasMany(Book);
+User.hasMany(Todo);
+Todo.belongsTo(User);
 
-module.exports = { 
+module.exports = {
   sequelizeDB,
   users: User,
-  books: new BookInterface(Book),
-  libraries: new LibraryInterface(Library),
+  todos: new TodoInterface(Todo),
 };
