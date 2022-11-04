@@ -169,11 +169,13 @@ describe('Test basic /todo CRUD methods with valid authentication', () => {
       .send({
         task: 'Test Todo',
         difficulty: 1,
+        complete: false,
       });
     expect(response.status).toEqual(201);
     expect(response.body.task).toEqual('Test Todo');
     expect(response.body.author).toEqual('testAdmin');
     expect(response.body.difficulty).toEqual(1);
+    expect(response.body.complete).toEqual(false);
   });
 
   test('Get a todo by id', async () => {
@@ -315,6 +317,7 @@ describe('Test role-based access flow', () => {
       .send({
         task: 'Test Todo',
         difficulty: 1,
+        complete: false,
       });
     expect(response.status).toEqual(201);
   });
@@ -327,5 +330,6 @@ describe('Test role-based access flow', () => {
     expect(response.body.task).toEqual('Test Todo');
     expect(response.body.author).toEqual('testAdmin');
     expect(response.body.difficulty).toEqual(1);
+    expect(response.body.complete).toEqual(false);
   });
 });

@@ -24,5 +24,9 @@ module.exports = (sequelizeDB, DataTypes) => {
         },
       },
     },
+    complete: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+    },
   });
 };

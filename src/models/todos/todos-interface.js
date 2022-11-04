@@ -15,7 +15,7 @@ module.exports = class TodoInterface extends ModelInterface {
         },
       });
       return await user.getTodos({
-        attributes: ['id', 'task', 'author', 'difficulty'],
+        attributes: ['id', 'task', 'author', 'difficulty', 'complete'],
       });
     } catch (err) {
       console.error(err.message);
