@@ -1,16 +1,16 @@
-# Full Express Server Implementation
+# Todo Application API
 
-An Express API server that includes functionality you would find at your local library. Built with with basic username/password authentication, bearer authentication, and role-based access control.
+An Express API server that includes functionality to support a basic Todo Application. Built with with basic username/password authentication, bearer authentication, and role-based access control.
 
-Author: [Robert Shepley](https://github.com/shepleysound), [Tyler Main](https://github.com/TylerofArk)
+Author: [Robert Shepley](https://github.com/shepleysound)
+
 <!-- Replace URL's and add more necessary links -->
-- [Tests Report](https://github.com/ShepleySound/library-api/actions)
-- [Assignment Pull Request](https://github.com/ShepleySound/library-api/pull/1)
-- [Heroku Prod Deployment](https://shepley-main-library-api.herokuapp.com/)
+
+- [Heroku Prod Deployment]()
 
 ## Documentation
 
-[OpenAPI Docs hosted on SwaggerHub](https://app.swaggerhub.com/apis-docs/SHEPLEYSOUND_1/library-api/1.0)
+[OpenAPI Docs hosted on SwaggerHub]()
 
 ### Running the application locally
 

@@ -1,10 +1,10 @@
 {
-  "name": "full-auth-server",
+  "name": "todo-app-api",
   "version": "1.0.0",
   "engines": {
     "node": "18.x"
   },
-  "description": "API Server with bearer auth and role-based access control.",
+  "description": "Todo Application API with bearer auth and role-based access control.",
   "main": "index.js",
   "scripts": {
     "start": "NODE_ENV=production node index.js",
