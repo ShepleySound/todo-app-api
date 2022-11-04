@@ -6,11 +6,13 @@ Author: [Robert Shepley](https://github.com/shepleysound)
 
 <!-- Replace URL's and add more necessary links -->
 
-- [Heroku Prod Deployment]()
+<!-- - [Heroku Prod Deployment]() -->
 
 ## Documentation
 
-[OpenAPI Docs hosted on SwaggerHub]()
+This API is documented using [OpenAPI](https://www.openapis.org/).
+
+To access documentation either on a locally hosted instance of the API or on the live deployment URL, simply navigate to the `/docs` route in your browser. This will display a page that uses [Swagger UI](https://swagger.io/) to parse and render the OpenAPI documentation.
 
 ### Running the application locally
 
