@@ -9,6 +9,7 @@ const DATABASE_URL = process.env.DATABASE_URL || 'sqlite:memory';
 const DATABASE_CONFIG =
   process.env.NODE_ENV === 'production'
     ? {
+        retry: true,
         dialectOptions: {
           ssl: {
             require: true,
